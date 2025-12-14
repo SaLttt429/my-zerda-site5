@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE LEGEND OF ZERDA</title>
+    <style>
+        /* 基本重置與全域樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: 0.3s;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* Header & Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(145, 240, 207, 0.8); /* 輕微透明背景 */
+        }
+
+        .logo {
+            font-size: 30px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .menu-toggle {
+            cursor: pointer;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* 側邊導航欄 (預設隱藏) */
+        .sidenav {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1001;
+            top: 0;
+            right: 0;
+            background-color: #000;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sidenav a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .sidenav a:hover {
+            color: #f1f1f1;
+        }
+
+        .sidenav .closebtn {
+            position: absolute;
+            top: 20px;
+            right: 45px;
+            font-size: 50px;
+            margin-left: 50px;
+            cursor: pointer;
+        }
+
+        /* Hero Slider (輪播區) */
+        .hero-section {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        /* 輪轉圖片背景 */
+        .slide:nth-child(1) { background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url(sky1.jpg); }
+        .slide:nth-child(2) { background-image: linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.1)), url(two\ temple.jpg); }
+        .slide:nth-child(3) { background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url(templeback.jpg); }
+
+        .hero-text {
+            position: relative;
+            z-index: 10;
+            color: rgb(193, 254, 224);
+            margin-left: 9%;
+            max-width: 600px;
+        }
+
+        .hero-text h2 {
+            font-size: 50px;
+            font-weight: 300;
+            margin-bottom: 5px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-text p {
+            font-size: 16px;
+            margin-bottom: 30px;
+            opacity: 0.8;
+            animation: fadeInUp 1.2s ease-out;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #76f8beaf;
+            color: #000;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 2px;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #000;
+            color: #fff;
+        }
+
+        /* 簡單的輪播控制 */
+        .slider-nav {
+            position: absolute;
+            bottom: 50px;
+            left: 10%;
+            z-index: 20;
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            color: rgb(255, 255, 255);
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 2px;
+            opacity: 0.9;
+        }
+        
+        .nav-btn:hover { opacity: 1; }
+
+        /* Portfolio Section */
+        .section-padding {
+            padding: 100px 50px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-title h2 {
+            font-size: 36px;
+            font-weight: 300;
+            margin-bottom: 15px;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .portfolio-item {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .portfolio-item img {
+            width: 100%;
+            height: 400px; /* 固定高度保持整齊 */
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .portfolio-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .portfolio-text {
+            margin-top: 15px;
+        }
+
+        .portfolio-text h3 {
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 5px;
+        }
+
+        .portfolio-text span {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Quote Section */
+        .quote-section {
+            background-color: #7cdbb6;
+            text-align: center;
+            padding: 120px 20px;
+        }
+
+        .quote-text {
+            font-size: 24px;
+            font-style: italic;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #333;
+        }
+
+        /* Footer */
+        footer {
+            background: #111;
+            color: #fff;
+            padding: 80px 50px;
+            text-align: center;
+        }
+
+        footer p {
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* RWD 響應式 */
+        @media (max-width: 768px) {
+            .hero-text h2 { font-size: 40px; }
+            header { padding: 20px; }
+            .section-padding { padding: 60px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">THE LEGEND OF ZERDA</div>
+        <div class="menu-toggle" onclick="openNav()">Menu &#9776;</div>
+    </header>
+
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="https://salttt429.github.io/my-zerda-site/src/">HOME PAGE首頁</a>
+    </div>
+
+    <section class="hero-section">
+        <div class="slide active">
+            <div class="hero-text">
+                <h2><br>初始空島神廟</h2>
+                <p>藉由破解這些神廟來獲得勞魯之手能力</p>
+                <a href="https://www.cool3c.com/article/193342" class="btn" target="_blank">View More</a>
+            </div>
+        </div>
+        <div class="slide">
+            <div class="hero-text">
+                <h2><br>神廟外觀的更動</h2>
+                <p>曠野之息與王國之淚神妙的對比</p>
+                <a href="https://annygames.com/2023/05/sky-island/" class="btn" target="_blank">View More</a>
+            </div>
+        </div>
+        <div class="slide">
+            <div class="hero-text">
+                <h2><br>古代勇者之魂套裝</h2>
+                <p>海拉魯城堡，前往挑戰災害加儂多夫</p>
+                <a href="https://annygames.com/2023/08/ancient-heros-aspect/" class="btn" target="_blank">View More</a>
+            </div>
+        </div>
+
+        <div class="slider-nav">
+            <div class="nav-btn" onclick="prevSlide()">PREV</div>
+            <div class="nav-btn" onclick="nextSlide()">NEXT</div>
+        </div>
+    </section>
+
+    <section class="quote-section">
+        <p class="quote-text">"Games can be so cool that ZERDA is second of none."</p>
+    </section>
+
+    <section class="section-padding">
+        <div class="section-title">
+            <h2>林克的主要新技能（勞魯之手能力）介紹</h2>
+        </div>
+        <div class="portfolio-grid">
+            <div class="portfolio-item">
+                <img src="hand1.jpg" alt="Work 1">
+                <div class="portfolio-text">
+                    <h3>究極手 (抓取黏合物體) </h3>
+                    <span>有趣程度10/10</span>
+                </div>
+            </div>
+            <div class="portfolio-item">
+                <img src="hand2.jpg" alt="Work 2">
+                <div class="portfolio-text">
+                    <h3>通天術 (穿越天花板)</h3>
+                    <span>方便程度10/10</span>
+                </div>
+            </div>
+            <div class="portfolio-item">
+                <img src="hand3.jpg" alt="Work 3">
+                <div class="portfolio-text">
+                    <h3>餘料建造 (強化武器/盾牌/弓箭)</h3>
+                    <span>遊玩爽度10/10</span>
+                </div>
+            </div>
+            <div class="portfolio-item">
+                <img src="hand4.jpg" alt="Work 4">
+                <div class="portfolio-text">
+                    <h3>倒轉乾坤 (逆轉物體時間)。</h3>
+                    <span>操作難度10/10</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Let me know your thoughts by sending email:youchanfantasy@gmail.com </p>
+    </footer>
+
+    <script>
+        // 側邊導航欄開關
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "100%";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+
+        // 簡單的輪播邏輯
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            // 移除所有 active class
+            slides.forEach(slide => slide.classList.remove('active'));
+            
+            // 處理索引循環
+            if (index >= totalSlides) currentSlide = 0;
+            else if (index < 0) currentSlide = totalSlides - 1;
+            else currentSlide = index;
+
+            // 加入 active class
+            slides[currentSlide].classList.add('active');
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // 自動輪播 (選填，每6秒換一張)
+        setInterval(nextSlide, 6000);
+    </script>
+</body>
+</html>
